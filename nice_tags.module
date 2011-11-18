@@ -36,16 +36,6 @@ function nice_tags_form_alter(&$form, $form_state, $form_id) {
 
   /** NODE FORM **/
   if ($form['#id'] == 'node-form' && isset($form['taxonomy']['tags'])) {
-
-    // // dev only!
-    // // dsm($form);
-    // foreach ($form as $k => $v) {
-    //   if ($k != 'taxonomy' && $k[0] != '#') {
-    //     unset($form[$k]);
-    //   }
-    // }
-    // // dev only!
-
     $form['#after_build'][] = 'nice_tags_node_form_after_build';
   }
 }
