@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ *  Install file for nice tags module
+ *
+ * @author Nuno Veloso (drupal.org/user/80656)
+ */
+
+
+/**
+ * Implementation of hook_uninstall.
+ */
+function nice_tags_uninstall () {
+  // we are removing variables that are set in admin forms
+  foreach (array_keys(taxonomy_get_vocabularies()) as $vid) {
+    variable_del('nice_tags_vid_'. $vid);
+  }
+}

@@ -1,0 +1,63 @@
+/**
+ * @file
+ * CSS file of nice tag module, contains basic themeing of the form
+ * 
+ * @author Nuno Veloso (drupal.org/user/80656) 
+ */
+
+
+.nice-tags-form-item input:focus {
+  outline: none;
+}
+
+
+.nice-tags-form-item .tags-container input {
+  border: none;
+  background: none;
+  padding: .2em 0;
+  width: 50px;
+}
+
+
+.nice-tags-form-item .tags-container {
+  background: white;
+  -mozilla-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 3px;
+  margin: 0;
+  border: solid 1px #999999;
+}
+
+
+.nice-tags-form-item .tags-container span {
+  background: #EEEEEE;
+  font-size: 12px;
+  -mozilla-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  margin: 0 .4em .4em 0;
+  padding: 0 .2em 0 .4em;
+  display: block;
+  float: left;
+}
+
+
+.nice-tags-form-item .tags-container span a {
+  -webkit-border-radius: 2px;
+  -mozilla-border-radius: 2px;
+  background: #333333;
+  padding: 0 .4em;
+  color: white;
+  text-decoration: none;
+  margin-left: .4em;
+}
+
+
+.nice-tags-form-item .tags-container span a:hover {
+  color: #CCCCCC;
+}
+
+
+.nice-tags-form-item .tags-container span a:active {
+  color: white;
+}
+

@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * @file
+ *  Provides nicer tags text fields for Taxonomy free-tags
+ *
+ * @author Nuno Veloso (drupal.org/user/80656)
+ *
+ * @todo add admin interface so we get to choose which keys triggers the tags
+ */
+
+
+/**
+ * Implementation of hook_form_alter.
+ *
+ * @todo complete admin form (commented)
+ */
+function nice_tags_form_alter(&$form, $form_state, $form_id) {
+  /** MODIFY TAXONOMY ADMIN FORM**/
+  if ($form_id == 'taxonomy_form_vocabulary') {
+    // build nice tags checkbox
+    $form['settings']['nice_tags'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Nice Tags'),
+      '#description' => 'Enables Nice Tags for taxonomy tags field, which will improve the UX of the form if JS is enabled.',
+      '#default_value' => variable_get('nice_tags_vid_'. $form['vid']['#value'], 0),
+      '#weight' => -1,
+    );
+    
+    // also pushes tags checkbox to stay above nice tags one
+    $form['settings']['tags']['#weight'] = -2;
+    
+    $form['#after_build'][] = 'nice_tags_taxonomy_form_vocabulary_after_build';
+    $form['#submit'][] = 'nice_tags_taxonomy_form_vocabulary_submit';
+  }
+
+  /** NODE FORM **/
+  if ($form['#id'] == 'node-form' && isset($form['taxonomy']['tags'])) {
+
+    // // dev only!
+    // // dsm($form);
+    // foreach ($form as $k => $v) {
+    //   if ($k != 'taxonomy' && $k[0] != '#') {
+    //     unset($form[$k]);
+    //   }
+    // }
+    // // dev only!
+
+    $form['#after_build'][] = 'nice_tags_node_form_after_build';
+  }
+}
+
+
+/**
+ * taxonomy_form_vocabulary after build to add include UX tweaks
+ *
+ * @param $form
+ * @param $form_state
+ * 
+ * @return $form
+ */
+function nice_tags_taxonomy_form_vocabulary_after_build($form, $form_state) {
+  // including JS for the admin section
+  drupal_add_js(array('nice_tags_admin' => array()), 'setting');
+  drupal_add_js(drupal_get_path('module', 'nice_tags') .'/nice_tags.admin.js', 'module');
+
+  return $form;
+}
+
+
+/**
+ * Submit handler for taxonomy_form_vocabulary form
+ *
+ * @param $form
+ * @param $form_state, passed by reference
+ */
+function nice_tags_taxonomy_form_vocabulary_submit($form, &$form_state) {
+  // we'll only want to set a value if the taxonomy field is tags
+  if ($form_state['values']['tags'] == 0 && $form_state['values']['nice_tags'] == 1) {
+    $form_state['values']['nice_tags'] = 0;
+    drupal_set_message(t('Nice tags have automatically been disabled for this vocabulary, since tags are disabled.'));
+  }
+  variable_set('nice_tags_vid_'. $form_state['values']['vid'], $form_state['values']['nice_tags']);
+}
+
+
+/**
+ * node-form after build to enable nice tags
+ *
+ * @param $form
+ * @param $form_state
+ * 
+ * @return $form
+ */
+function nice_tags_node_form_after_build($form, $form_state) {
+  $nice_tags_ids = array();
+
+  foreach ($form['taxonomy']['tags'] as $vid => $val) {
+    if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
+      $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
+      $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
+
+      // adds a wrapper and an achor to the input wrapper
+      $form['taxonomy']['tags'][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper">';
+      // $form['taxonomy']['tags'][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper"><a id="nice-tags" />';
+      // $form['taxonomy']['tags'][6]['#attributes'] = array('class' => 'nice-tags-input');
+      $form['taxonomy']['tags'][$vid]['#suffix'] = '</div>';
+
+      $nice_tags_ids[] = "#$id";
+    }
+  }
+  
+  // sanity check to avoid repeated ids
+  $nice_tags_ids = array_unique($nice_tags_ids);
+
+  // if we have any nice tags to use, then add the JS
+  if (!empty($nice_tags_ids)) {
+    drupal_add_js(array('nice_tags' => $nice_tags_ids), 'setting');
+    drupal_add_js(drupal_get_path('module', 'nice_tags') .'/nice_tags.js', 'module');
+    drupal_add_css(drupal_get_path('module', 'nice_tags') .'/nice_tags.css', 'module');
+  }
+
+  return $form;
+}

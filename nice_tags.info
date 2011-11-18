@@ -1,0 +1,5 @@
+name = Nice Tags
+description = Provides nicer tags text fields for Taxonomy free-tags
+dependencies[] = taxonomy
+package = User interface
+core = 6.x
