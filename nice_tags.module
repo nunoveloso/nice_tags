@@ -83,23 +83,47 @@ function nice_tags_taxonomy_form_vocabulary_submit($form, &$form_state) {
  * @return $form
  */
 function nice_tags_node_form_after_build($form, $form_state) {
+  $vids = array();
   $nice_tags_ids = array();
 
-  foreach ($form['taxonomy']['tags'] as $vid => $val) {
-    if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
-      $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
-      $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
+  // if this is a regular vocabulary form
+  if (array_key_exists('tags', $form['taxonomy'])) {
+    // adding wrapper
+    foreach ($form['taxonomy']['tags'] as $vid => $val) {
+      if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
+        $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
+        $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
 
-      // adds a wrapper and an achor to the input wrapper
-      $form['taxonomy']['tags'][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper">';
-      // $form['taxonomy']['tags'][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper"><a id="nice-tags" />';
-      // $form['taxonomy']['tags'][6]['#attributes'] = array('class' => 'nice-tags-input');
-      $form['taxonomy']['tags'][$vid]['#suffix'] = '</div>';
+        // adds a wrapper and an achor to the input wrapper
+        $form['taxonomy']['tags'][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper">';
+        $form['taxonomy']['tags'][$vid]['#suffix'] = '</div>';
 
-      $nice_tags_ids[] = "#$id";
+        $nice_tags_ids[] = "#$id";
+      }
     }
   }
-  
+  // if we don't find it there, let's see if it has been moved
+  else {
+    foreach ($form as $key => $element) {
+      $element = (array) $element;
+      if ($element['#parents'] == 'taxonomy') {
+        // adding wrapper
+        foreach ($element as $vid => $val) {
+          if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
+            $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
+            $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
+
+            // adds a wrapper and an achor to the input wrapper
+            $form[$key][$vid]['#prefix'] = '<div id="'. $id .'" class="nice-tags-wrapper">';
+            $form[$key][$vid]['#suffix'] = '</div>';
+
+            $nice_tags_ids[] = "#$id";
+          }
+        }
+      }
+    }
+  }
+
   // sanity check to avoid repeated ids
   $nice_tags_ids = array_unique($nice_tags_ids);
 
