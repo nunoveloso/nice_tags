@@ -11,15 +11,21 @@
  */
 Drupal.behaviors.nice_tags = function() {
   $.each(Drupal.settings['nice_tags'], function(index, input_wrapper) {
-    // initalises nice tags environment
-    tagsStateInit(input_wrapper);
+    
+    // if this form hasn't been processed already
+    if (!$(input_wrapper).hasClass('nice-tags-processed')) {
+      // initalises nice tags environment
+      tagsStateInit(input_wrapper);
 
-    // prepopulates tagsState
-    tagsStatePrepoulate(input_wrapper);
+      // prepopulates tagsState
+      tagsStatePrepoulate(input_wrapper);
 
-    // handles the triggers and listeners
-    easyTagsListen(input_wrapper)
+      // handles the triggers and listeners
+      easyTagsListen(input_wrapper)
 
+      // this is to prevent multi call
+      $(input_wrapper).addClass('nice-tags-processed');
+    }
 
     /**
      * Overriding AutoComplete method that Hides the autocomplete suggestions
