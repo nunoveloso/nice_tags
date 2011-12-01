@@ -84,14 +84,14 @@ function nice_tags_taxonomy_form_vocabulary_submit($form, &$form_state) {
  */
 function nice_tags_node_form_after_build($form, $form_state) {
   $vids = array();
-  $nice_tags_ids = array();
+  static $nice_tags_ids = array();
 
   // if this is a regular vocabulary form
   if (array_key_exists('tags', $form['taxonomy'])) {
     // adding wrapper
     foreach ($form['taxonomy']['tags'] as $vid => $val) {
       if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
-        $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
+        $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new-'. time();
         $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
 
         // adds a wrapper and an achor to the input wrapper
@@ -110,7 +110,7 @@ function nice_tags_node_form_after_build($form, $form_state) {
         // adding wrapper
         foreach ($element as $vid => $val) {
           if (is_numeric($vid) && variable_get('nice_tags_vid_'. $vid, 0) == 1) {
-            $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new';
+            $nid = $form['nid']['#value'] ? $form['nid']['#value'] : 'new-'. time();
             $id = "nice-tags-wrapper-vid-$vid-nid-$nid";
 
             // adds a wrapper and an achor to the input wrapper
@@ -129,7 +129,7 @@ function nice_tags_node_form_after_build($form, $form_state) {
 
   // if we have any nice tags to use, then add the JS
   if (!empty($nice_tags_ids)) {
-    drupal_add_js(array('nice_tags' => $nice_tags_ids), 'setting');
+    drupal_add_js(array('nice_tags' => array('nice_tags_ids' => $nice_tags_ids)), 'setting');
     drupal_add_js(drupal_get_path('module', 'nice_tags') .'/nice_tags.js', 'module');
     drupal_add_css(drupal_get_path('module', 'nice_tags') .'/nice_tags.css', 'module');
   }

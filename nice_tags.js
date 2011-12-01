@@ -8,9 +8,23 @@
 
 /**
  * Using Drupal behaviours to declare main function
+ *
+ * @todo remove from Drupal.settings.nice_tags.nice_tags_ids as you process them?
+ * @todo add a flag so we care about $could_be_assync if really assync?
  */
-Drupal.behaviors.nice_tags = function() {
-  $.each(Drupal.settings['nice_tags'], function(index, input_wrapper) {
+Drupal.behaviors.nice_tags = function(context) {
+
+  // let's insure we can also deal with assynchronous elements
+  $could_be_assync = $('.nice-tags-wrapper');
+  if ($could_be_assync.length) {
+    $could_be_assync.each(function() {
+      Drupal.settings.nice_tags.nice_tags_ids.push('#' + $(this).attr('id'));
+    });
+  }
+
+  Drupal.settings.nice_tags.nice_tags_ids = $.unique(Drupal.settings.nice_tags.nice_tags_ids);
+
+  $.each(Drupal.settings.nice_tags.nice_tags_ids, function(index, input_wrapper) {
     
     // if this form hasn't been processed already
     if (!$(input_wrapper).hasClass('nice-tags-processed')) {

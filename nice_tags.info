@@ -3,3 +3,10 @@ description = Provides nicer tags text fields for Taxonomy free-tags
 dependencies[] = taxonomy
 package = User interface
 core = 6.x
+
+; Information added by drupal.org packaging script on 2011-11-18
+version = "6.x-1.0"
+core = "6.x"
+project = "nice_tags"
+datestamp = "1321635644"
+
