@@ -59,6 +59,7 @@ Drupal.behaviors.nice_tags = function() {
      */
     function tagsStateInit(input_wrapper) {
       // Clone the original form and make sure we distinguish them
+
       $(input_wrapper).prepend($(input_wrapper).html());
       $(input_wrapper).children('.form-item:first').addClass('nice-tags-form-item');
       $(input_wrapper).children('.form-item:last').addClass('regular-form-item').hide();
@@ -77,8 +78,10 @@ Drupal.behaviors.nice_tags = function() {
         $(this).addClass('focus');
       });
 
-      // remove the focus when input blur is fired
+      // adds the content of the field as a tag and removes the focus when input blur is fired
       $inputField.blur(function(){
+        tagsStateAdd($.trim($inputField.attr('value')), input_wrapper);
+        $inputField.val('');
         $tagContainer.removeClass('focus');
       });
     }
