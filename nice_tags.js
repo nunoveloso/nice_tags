@@ -51,8 +51,13 @@ Drupal.behaviors.nice_tags = function(context) {
 
       // Select item if the right key or mousebutton was pressed
       if (this.selected && ((keycode && keycode != 46 && keycode != 8 && keycode != 27) || !keycode)) {
-        tagsStateAdd(this.selected.autocompleteValue, input_wrapper);
-        this.input.value = '';
+        if (input_wrapper != '#' && $(input_wrapper).length > 0) {
+          tagsStateAdd(this.selected.autocompleteValue, input_wrapper);
+          this.input.value = '';
+        }
+        else {
+          this.input.value = this.selected.autocompleteValue;
+        }
       }
       // Hide popup
       var popup = this.popup;
@@ -236,7 +241,7 @@ Drupal.behaviors.nice_tags = function(context) {
 
       // builds the array, making sure only the raw term goes there
       $tagContainer.find('span').each(function (){
-        array.push($(this).text().replace(/x$/, '').trim());
+        array.push($.trim($(this).text().replace(/x$/, '')));
       });
 
       return array;
